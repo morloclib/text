@@ -1,0 +1,94 @@
+module text (*)
+
+import root
+
+
+-- Decomposition
+-----------------
+
+-- Split a string by a delimiter
+-- split "," "a,b,c" == ["a", "b", "c"]
+split :: Str -> Str -> [Str]
+
+-- Split a string into lines
+lines :: Str -> [Str]
+
+-- Split a string into whitespace-delimited words
+words :: Str -> [Str]
+
+-- Split a string into individual characters (each a single-char Str)
+chars :: Str -> [Str]
+
+-- Composition
+---------------
+
+-- Join a list of strings with a delimiter
+-- join "," ["a", "b", "c"] == "a,b,c"
+join :: Str -> [Str] -> Str
+
+-- Join with newlines
+unlines :: [Str] -> Str
+
+-- Join with spaces
+unwords :: [Str] -> Str
+
+-- Search
+----------
+
+-- Does the haystack contain the needle?
+contains :: Str -> Str -> Bool
+
+-- Does the string start with the given prefix?
+startsWith :: Str -> Str -> Bool
+
+-- Does the string end with the given suffix?
+endsWith :: Str -> Str -> Bool
+
+-- Case conversion
+-------------------
+
+-- Convert all characters to uppercase (Unicode-aware)
+toUpper :: Str -> Str
+
+-- Convert all characters to lowercase (Unicode-aware)
+toLower :: Str -> Str
+
+-- Whitespace trimming
+-----------------------
+
+-- Remove leading and trailing whitespace
+trim :: Str -> Str
+
+-- Remove leading whitespace
+trimStart :: Str -> Str
+
+-- Remove trailing whitespace
+trimEnd :: Str -> Str
+
+-- Replacement
+---------------
+
+-- Replace first occurrence of pattern with replacement
+-- replace "old" "new" "the old old way" == "the new old way"
+replace :: Str -> Str -> Str -> Str
+
+-- Replace all occurrences of pattern with replacement
+-- replaceAll "old" "new" "the old old way" == "the new new way"
+replaceAll :: Str -> Str -> Str -> Str
+
+-- Padding
+-----------
+
+-- Pad string on the left to reach the given width
+-- padLeft 5 "0" "42" == "00042"
+padLeft :: Int -> Str -> Str -> Str
+
+-- Pad string on the right to reach the given width
+-- padRight 5 " " "hi" == "hi   "
+padRight :: Int -> Str -> Str -> Str
+
+-- Query
+---------
+
+-- True if the string is empty or contains only whitespace
+isBlank :: Str -> Bool

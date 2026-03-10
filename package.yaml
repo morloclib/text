@@ -1,0 +1,11 @@
+name: text
+version: 0.1.0
+homepage: https://github.com/morloclib/text
+synopsis: Unicode text operations on Str
+description: Functions for splitting, joining, searching, transforming, and parsing text strings.
+category: text
+license: MIT
+author: "Zebulun Arendsee"
+maintainer: "z@morloc.io"
+github: https://github.com/morloclib/text
+bug-reports: https://github.com/morloclib/text
