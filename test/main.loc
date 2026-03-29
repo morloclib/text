@@ -1,0 +1,148 @@
+module text.test (test)
+
+import text
+import root
+
+type Py => Int = "int"
+type Py => Str = "str"
+type Py => Bool = "bool"
+type Py => Tuple2 a b = "tuple" a b
+type Py => List a = "list" a
+
+-------------------------------------------------------------------------------
+-- Test suite functions
+
+source Py from "text-test.py" ("testEqual", "printMsg", "printResult")
+testEqual
+    :: Str -- description of the test
+    -> a
+    -> a
+    -> (Int, Int) -- total number of tests and total fails
+    -> (Int, Int)
+printMsg :: Str -> a -> a
+printResult :: (Int, Int) -> (Int, Int)
+
+testGroup
+    :: Str
+    -> ((Int, Int) -> (Int, Int))
+    -> (Int, Int)
+    -> (Int, Int)
+testGroup msg tests = tests . printMsg msg
+
+passed :: (Int, Int) -> Bool
+passed t = 0 == (.0 t)
+
+test = runTests (0,0)
+
+-------------------------------------------------------------------------------
+-- Test suite
+
+runTests :: (Int, Int) -> Bool
+runTests =
+  ( passed
+  . printResult
+  . testGroup "Padding" testPadding
+  . testGroup "Replace" testReplace
+  . testGroup "Trim" testTrim
+  . testGroup "Case" testCase
+  . testGroup "Search" testSearch
+  . testGroup "Query" testQuery
+  . testGroup "Composition" testComposition
+  . testGroup "Decomposition" testDecomposition
+  )
+
+-------------------------------------------------------------------------------
+-- Decomposition
+
+testDecomposition :: (Int, Int) -> (Int, Int)
+testDecomposition =
+  ( testEqual "split comma" (split "," "a,b,c") ["a","b","c"]
+  . testEqual "split no match" (split "," "abc") ["abc"]
+  . testEqual "split empty delim" (split "" "abc") ["a","b","c"]
+  . testEqual "words" (words "hello world") ["hello","world"]
+  . testEqual "words extra spaces" (words "  hello   world  ") ["hello","world"]
+  . testEqual "chars" (chars "abc") ["a","b","c"]
+  . testEqual "chars empty" (chars "") ([] :: [Str])
+  . testEqual "lines basic" (lines "a\nb\nc") ["a","b","c"]
+  . testEqual "lines roundtrip" (lines (unlines ["a","b","c"])) ["a","b","c"]
+  )
+
+-------------------------------------------------------------------------------
+-- Composition
+
+testComposition :: (Int, Int) -> (Int, Int)
+testComposition =
+  ( testEqual "join comma" (join "," ["a","b","c"]) "a,b,c"
+  . testEqual "join empty sep" (join "" ["a","b","c"]) "abc"
+  . testEqual "join single" (join "," ["a"]) "a"
+  . testEqual "unwords" (unwords ["hello","world"]) "hello world"
+  . testEqual "unlines roundtrip" (lines (unlines ["a","b"])) ["a","b"]
+  )
+
+-------------------------------------------------------------------------------
+-- Query
+
+testQuery :: (Int, Int) -> (Int, Int)
+testQuery =
+  ( testEqual "isBlank empty" (isBlank "") True
+  . testEqual "isBlank spaces" (isBlank "  ") True
+  . testEqual "isBlank not blank" (isBlank "a") False
+  . testEqual "isBlank tab" (isBlank "\t") True
+  )
+
+-------------------------------------------------------------------------------
+-- Search
+
+testSearch :: (Int, Int) -> (Int, Int)
+testSearch =
+  ( testEqual "contains found" (contains "bc" "abcd") True
+  . testEqual "contains not found" (contains "xy" "abcd") False
+  . testEqual "contains empty needle" (contains "" "abcd") True
+  . testEqual "startsWith true" (startsWith "ab" "abcd") True
+  . testEqual "startsWith false" (startsWith "cd" "abcd") False
+  . testEqual "endsWith true" (endsWith "cd" "abcd") True
+  . testEqual "endsWith false" (endsWith "ab" "abcd") False
+  )
+
+-------------------------------------------------------------------------------
+-- Case
+
+testCase :: (Int, Int) -> (Int, Int)
+testCase =
+  ( testEqual "toUpper" (toUpper "hello") "HELLO"
+  . testEqual "toLower" (toLower "HELLO") "hello"
+  . testEqual "toUpper mixed" (toUpper "Hello World") "HELLO WORLD"
+  . testEqual "toLower mixed" (toLower "Hello World") "hello world"
+  )
+
+-------------------------------------------------------------------------------
+-- Trim
+
+testTrim :: (Int, Int) -> (Int, Int)
+testTrim =
+  ( testEqual "trim both" (trim "  hi  ") "hi"
+  . testEqual "trim none" (trim "hi") "hi"
+  . testEqual "trimStart" (trimStart "  hi") "hi"
+  . testEqual "trimEnd" (trimEnd "hi  ") "hi"
+  )
+
+-------------------------------------------------------------------------------
+-- Replace
+
+testReplace :: (Int, Int) -> (Int, Int)
+testReplace =
+  ( testEqual "replace first" (replace "old" "new" "old old") "new old"
+  . testEqual "replaceAll" (replaceAll "old" "new" "old old") "new new"
+  . testEqual "replaceAll none" (replaceAll "xyz" "new" "old old") "old old"
+  )
+
+-------------------------------------------------------------------------------
+-- Padding
+
+testPadding :: (Int, Int) -> (Int, Int)
+testPadding =
+  ( testEqual "padLeft" (padLeft 5 "0" "42") "00042"
+  . testEqual "padLeft no pad" (padLeft 2 "0" "42") "42"
+  . testEqual "padRight" (padRight 5 " " "hi") "hi   "
+  . testEqual "padRight no pad" (padRight 2 " " "hi") "hi"
+  )
